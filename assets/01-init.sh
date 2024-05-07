@@ -65,6 +65,10 @@ function init_freeradius {
         # Remove # from the start of the line in coa-relay file
         awk '/update control {/,/}/{ sub(/^#/, ""); print; next }1' $RADIUS_PATH/sites-available/coa-relay > temp && mv temp $RADIUS_PATH/sites-available/coa-relay
 
+        # Change the CoA-Packet-DST-Port from 1700 to 3799
+        sed -i 's|CoA-Packet-DST-Port := *1700|CoA-Packet-DST-Port := 3799|' $RADIUS_PATH/sites-available/coa-relay
+
+        # Remove the existing NAS configurations
         sed -i '/home_server coa-nas1 {/,$d' $RADIUS_PATH/sites-available/coa-relay
 
         # Get the number of NAS configurations
