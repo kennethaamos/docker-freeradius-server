@@ -178,6 +178,49 @@ Problem with not uncomment of recv-coa update control
 2h2rd Tue May  7 13:58:59 2024 : Error: Failed to load virtual server coa
 ```
 
+### Radclient examples
+
+
+```console
+echo "User-Name = pppoe@example.com,User-Password = simulate" | \
+    radclient -x -s '127.0.0.1' auth testing123
+```
+
+This command is sending an authentication request to a RADIUS server.
+
+- `echo "User-Name = pppoe@example.com,User-Password = simulate"`: This part is creating a string that contains the RADIUS attributes for the username and password.
+- `radclient -x -s '127.0.0.1' auth testing123`: This part is sending the attributes to the RADIUS server at IP address `127.0.0.1` using the `auth` command (which sends an Access-Request packet). The `-x` option enables debug mode, and `-s` prints out some statistics. `testing123` is the shared secret expected by the RADIUS server.
+
+```console
+echo "User-Name = pppoe@example.com" | \
+    radclient -x -s '127.0.0.1' disconnect testing123
+```
+
+This command is sending a disconnect request to a RADIUS server.
+
+- `echo 'User-Name = "pppoe@example.com"'`: This part is creating a string that contains the RADIUS attribute for the username.
+- `radclient -X -s '127.0.0.1' disconnect testing123`: This part is sending the attribute to the RADIUS server at IP address `127.0.0.1` using the `disconnect` command (which sends a Disconnect-Request packet). The `-X` option enables more detailed debug mode, and `-s` prints out some statistics. `testing123` is the shared secret expected by the RADIUS server.
+
+```console
+echo "User-Name = pppoe@example.com,Framed-IP-Address = 100.64.0.107" | \
+    radclient -x -s '127.0.0.1' coa testing123
+```
+
+This command is sending a CoA (Change of Authorization) request to a RADIUS server.
+
+- `echo "User-Name = pppoe@example.com,Framed-IP-Address = 100.64.0.107"`: This part is creating a string that contains the RADIUS attributes for the username and the framed IP address.
+- `radclient -X -s '127.0.0.1' coa testing123`: This part is sending the attributes to the RADIUS server at IP address `127.0.0.1` using the `coa` command (which sends a CoA-Request packet). The `-X` option enables more detailed debug mode, and `-s` prints out some statistics. `testing123` is the shared secret expected by the RADIUS server.
+
+A CoA request is used to change the attributes of a user session after it has been authenticated. In this case, it's specifying a username and a framed IP address. The server will use these attributes to find the session and apply the changes.
+
+
+```console
+echo "User-Name = pppoe@example.com,Cisco-Service-Info = QD;1048576000;196608000;393216000;U;314572800;58982400;117964800" | \
+    radclient -x -s '127.0.0.1' coa testing123
+```
+
+echo 'User-Name = "pppoe@example.com",Cisco-Service-Info = "QD;629145600;117964800;235929600;U;62914560;11796480;23592960"' | \
+    radclient -x -s '127.0.0.1' coa testing123
 
 
 ## PPP_VAN_JACOBSON_TCP_IP = false
