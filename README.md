@@ -218,13 +218,14 @@ A CoA request is used to change the attributes of a user session after it has be
 
 
 ```console
-echo "User-Name = pppoe@example.com,Cisco-Service-Info = QD;1048576000;196608000;393216000;U;314572800;58982400;117964800" | \
+echo 'User-Name = "pppoe@example.com",Cisco-Service-Info = "QD;629145600;117964800;235929600;U;62914560;11796480;23592960"' | \
     radclient -x -s '127.0.0.1' coa testing123
 ```
 
-echo 'User-Name = "pppoe@example.com",Cisco-Service-Info = "QD;629145600;117964800;235929600;U;62914560;11796480;23592960"' | \
+```console
+echo 'User-Name = "pppoe@example.com",Cisco-Service-Info = "QD;1048576000;196608000;393216000;U;104857600;19660800;39321600"' | \
     radclient -x -s '127.0.0.1' coa testing123
-
+```
 
 ## PPP_VAN_JACOBSON_TCP_IP = false
 
