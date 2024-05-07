@@ -65,6 +65,43 @@ function init_freeradius {
         # Remove # from the start of the line in coa-relay file
         awk '/update control {/,/}/{ sub(/^#/, ""); print; next }1' $RADIUS_PATH/sites-available/coa-relay > temp && mv temp $RADIUS_PATH/sites-available/coa-relay
 
+        sed -i '/home_server coa-nas1 {/,$d' $RADIUS_PATH/sites-available/coa-relay
+
+        # Get the number of NAS configurations
+        NAS_COUNT=$(env | grep -c '^COA_RELAY_NAS_IP_')
+
+        # Iterate over NAS configurations
+        for ((i=1; i<=NAS_COUNT; i++)); do
+            # Get NAS configuration from environment variables
+            IP_VAR="COA_RELAY_NAS_IP_$i"
+            PORT_VAR="COA_RELAY_NAS_PORT_$i"
+            SECRET_VAR="COA_RELAY_NAS_SECRET_$i"
+
+            IP=${!IP_VAR}
+            PORT=${!PORT_VAR}
+            SECRET=${!SECRET_VAR}
+
+# Append NAS configuration to the file
+echo "home_server coa-nas$i {
+    type = coa
+    ipaddr = $IP
+    port = $PORT
+    secret = $SECRET
+    coa {
+        irt = 2
+        mrt = 16
+        mrc = 5
+        mrd = 30
+    }
+}" >> $RADIUS_PATH/sites-available/coa-relay
+# Append home_server_pool configuration to the file
+echo "home_server_pool coa-nas$i {
+    type = fail-over
+    home_server = coa-nas$i
+    virtual_server = originate-coa-relay
+}" >> $RADIUS_PATH/sites-available/coa-relay
+        done
+
         # Enable coa-relay in freeadius
         ln -s $RADIUS_PATH/sites-available/coa-relay $RADIUS_PATH/sites-enabled/coa-relay
 
