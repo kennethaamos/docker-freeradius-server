@@ -65,17 +65,18 @@ function init_freeradius {
         # Enable coa-relay in freeadius
         ln -s $RADIUS_PATH/sites-available/coa-relay $RADIUS_PATH/sites-enabled/coa-relay
 
-        # Create detail.coa file
+        touch $RADIUS_PATH/detail_coa
+
         echo 'detail detail_coa {
             filename = ${radacctdir}/detail_coa
             escape_filenames = no
             permissions = 0600
             header = "%t"
             locking = yes
-        }' > $RADIUS_PATH/mods-available/detail_coa.accounting
+        }' > $RADIUS_PATH/mods-available/detail_coa
 
         # Create symbolic link to mods-enabled
-        ln -s $RADIUS_PATH/mods-available/detail_coa.accounting $RADIUS_PATH/mods-enabled/detail_coa.accounting
+        ln -s $RADIUS_PATH/mods-available/detail_coa $RADIUS_PATH/mods-enabled/detail_coa
     fi
 
 	# Set Database connection
