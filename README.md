@@ -15,6 +15,9 @@ FreeRadius Docker based on Ubuntu 20.04 LTS, optimized for ISP's.
 | DEFAULT_CLIENT_SECRET       | testing123         | optional |
 | EAP_USE_TUNNELED_REPLY      | true               | required |
 | COA_RELAY_ENABLE            | true               | optional |
+| COA_RELAY_NAS_IP_n          | 127.0.0.1          | optional |
+| COA_RELAY_NAS_PORT_n        | 3799               | optional |
+| COA_RELAY_NAS_SECRET_n      | secret             | optional |
 | STATUS_ENABLE               | true               | optional |
 | STATUS_CLIENT               | exporter           | optional |
 | STATUS_SECRET               | adminsecret1       | optional |
