@@ -63,7 +63,7 @@ function init_freeradius {
 
     if [ "$COA_RELAY_ENABLE" == true ]; then
         # Remove # from the start of the line in coa-relay file
-        sed -i '/^# Tmp-String-0 :=/s/^# //' $RADIUS_PATH/sites-available/coa-relay
+        awk '/update control {/,/}/{ sub(/^#/, ""); print; next }1' $RADIUS_PATH/sites-available/coa-relay > temp && mv temp $RADIUS_PATH/sites-available/coa-relay
 
         # Enable coa-relay in freeadius
         ln -s $RADIUS_PATH/sites-available/coa-relay $RADIUS_PATH/sites-enabled/coa-relay
