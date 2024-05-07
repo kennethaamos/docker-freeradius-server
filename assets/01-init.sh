@@ -70,6 +70,12 @@ function init_freeradius {
         # Get the number of NAS configurations
         NAS_COUNT=$(env | grep -c '^COA_RELAY_NAS_IP_')
 
+        # Check if there are NAS configurations
+        if [ $NAS_COUNT -eq 0 ]; then
+            echo "No NAS configurations found. Skipping COA-Relay configuration."
+            return
+        fi
+
         # Iterate over NAS configurations
         for ((i=1; i<=NAS_COUNT; i++)); do
             # Get NAS configuration from environment variables
