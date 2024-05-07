@@ -61,6 +61,23 @@ function init_freeradius {
         echo "Setting the status page for client $STATUS_CLIENT has been completed."
 	fi
 
+    if [ "$COA_RELAY_ENABLE" == true ]; then
+        # Enable coa-relay in freeadius
+        ln -s $RADIUS_PATH/sites-available/coa-relay $RADIUS_PATH/sites-enabled/coa-relay
+
+        # Create detail.coa file
+        echo 'detail detail_coa {
+            filename = ${radacctdir}/detail_coa
+            escape_filenames = no
+            permissions = 0600
+            header = "%t"
+            locking = yes
+        }' > $RADIUS_PATH/mods-available/detail_coa.accounting
+
+        # Create symbolic link to mods-enabled
+        ln -s $RADIUS_PATH/mods-available/detail_coa.accounting $RADIUS_PATH/mods-enabled/detail_coa.accounting
+    fi
+
 	# Set Database connection
 	sed -i 's|^#\s*server = .*|server = "'$MYSQL_HOST'"|' $RADIUS_PATH/mods-available/sql
 	sed -i 's|^#\s*port = .*|port = "'$MYSQL_PORT'"|' $RADIUS_PATH/mods-available/sql
