@@ -47,9 +47,9 @@ function init_freeradius {
         ln -s $RADIUS_PATH/sites-available/status $RADIUS_PATH/sites-enabled/status
 
         # Get IP of the radius container
-        IP=`ifconfig $STATUS_INTERFACE | awk '/inet/{ print $2;} '`
+        IP_STATUS=`ifconfig $STATUS_INTERFACE | awk '/inet/{ print $2;} '`
 
-        sed -i '0,/ipaddr = 127.0.0.1/s/ipaddr = 127.0.0.1/ipaddr = '$IP'/' $RADIUS_PATH/sites-available/status
+        sed -i '0,/ipaddr = 127.0.0.1/s/ipaddr = 127.0.0.1/ipaddr = '$IP_STATUS'/' $RADIUS_PATH/sites-available/status
         sed -i '0,/admin/s/admin/'$STATUS_CLIENT'/' $RADIUS_PATH/sites-available/status
         sed -i '0,/ipaddr = 127.0.0.1/s/ipaddr = 127.0.0.1/ipaddr = 0.0.0.0/' $RADIUS_PATH/sites-available/status
 
@@ -62,11 +62,18 @@ function init_freeradius {
 	fi
 
     if [ "$COA_RELAY_ENABLE" == true ]; then
-        # Remove # from the start of the line in coa-relay file
-        awk '/update control {/,/}/{ sub(/^#/, ""); print; next }1' $RADIUS_PATH/sites-available/coa-relay > temp && mv temp $RADIUS_PATH/sites-available/coa-relay
 
-        # Change the CoA-Packet-DST-Port from 1700 to 3799
-        sed -i 's|CoA-Packet-DST-Port := *1700|CoA-Packet-DST-Port := 3799|' $RADIUS_PATH/sites-available/coa-relay
+        # IF $COA_RELAY_PACKET_DST_PORT is not set, set it to 3799
+        if [ -z "$COA_RELAY_PACKET_DST_PORT" ]; then
+            COA_RELAY_PACKET_DST_PORT=3799
+        fi
+
+        # Get IP of the radius container
+        IP_COA=`ifconfig $COA_RELAY_INTERFACE | awk '/inet/{ print $2;} '`
+
+        sed -i '0,/ipaddr = 127.0.0.1/s/ipaddr = 127.0.0.1/ipaddr = '$IP_COA'/' $RADIUS_PATH/sites-available/coa-relay
+        awk '/update control {/,/}/{ sub(/^#/, ""); print; next }1' $RADIUS_PATH/sites-available/coa-relay > temp && mv temp $RADIUS_PATH/sites-available/coa-relay
+        sed -i 's|CoA-Packet-DST-Port := *1700|CoA-Packet-DST-Port := '$COA_RELAY_PACKET_DST_PORT' |' $RADIUS_PATH/sites-available/coa-relay
 
         # Remove the existing NAS configurations
         sed -i '/home_server coa-nas1 {/,$d' $RADIUS_PATH/sites-available/coa-relay
@@ -76,8 +83,8 @@ function init_freeradius {
 
         # Check if there are NAS configurations
         if [ $NAS_COUNT -eq 0 ]; then
-            echo "No NAS configurations found. Skipping COA-Relay configuration."
-            return
+            echo "No NAS configurations found. Please set COA_RELAY_NAS_IP_1, COA_RELAY_NAS_PORT_1, and COA_RELAY_NAS_SECRET_1 environment variables to enable COA relay"
+            exit 1
         fi
 
         # Iterate over NAS configurations

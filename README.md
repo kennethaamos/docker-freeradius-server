@@ -13,19 +13,21 @@ FreeRadius Docker based on Ubuntu 20.04 LTS, optimized for ISP's.
 | MYSQL_USER                  | radius             | required |
 | MYSQL_INIT                  | true               | optional |
 | DEFAULT_CLIENT_SECRET       | testing123         | optional |
-| EAP_USE_TUNNELED_REPLY      | true               | required |
+| PPP_VAN_JACOBSON_TCP_IP     | false              | optional |
+| TZ                          | Europe/Bratislava  | optional |
+| EAP_USE_TUNNELED_REPLY      | true               | optional |
 | COA_RELAY_ENABLE            | true               | optional |
+| COA_RELAY_INTERFACE         | eth0 (SWARM = eth1)| optional |
+| COA_RELAY_PACKET_DST_PORT   | 3799               | optional |
 | COA_RELAY_NAS_IP_n          | 127.0.0.1          | optional |
 | COA_RELAY_NAS_PORT_n        | 3799               | optional |
 | COA_RELAY_NAS_SECRET_n      | secret             | optional |
 | STATUS_ENABLE               | true               | optional |
+| STATUS_INTERFACE            | eth0 (SWARM = eth1)| optional |
 | STATUS_CLIENT               | exporter           | optional |
 | STATUS_SECRET               | adminsecret1       | optional |
-| STATUS_INTERFACE            | eth0 (SWARM = eth1)| optional |
-| PPP_VAN_JACOBSON_TCP_IP     | false              | optional |
-| TZ                          | Europe/Bratislava  | optional |
 
-## STATUS_ENABLE = true
+## STATUS_ENABLE = 'true'
 
 ```diff
 server status {
@@ -74,7 +76,7 @@ server status {
 }
 ```
 
-## STATUS_ENABLE = true
+## COA_RELAY_ENABLE = 'true'
 
 ### Documentation
 
@@ -149,38 +151,6 @@ detail detail_coa {
 }
 ```
 
-
-Problem with not uncomment of recv-coa update control
-
-```console
-2h2rd Getting secret MYSQL_PASSWORD from /var/run/secrets/freeradius_pppoe_galera_mysql_password
-2h2rd Starting FreeRadius...
-2h2rd sed: -e expression #1, char 62: unterminated `s' command
-2h2rd Setting the status page for client exporter has been completed.
-2h2rd Default PPP Van Jacobson TCP/IP Header Compression has been disabled.
-2h2rd FreeRadius initialization completed.
-2h2rd Database exists, skipping initial setup of mysql database.
-2h2rd Tue May  7 13:58:59 2024 : Info: Debug state unknown (cap_sys_ptrace capability not set)
-2h2rd Tue May  7 13:58:59 2024 : Info: systemd watchdog is disabled
-2h2rd Tue May  7 13:58:59 2024 : Info: rlm_sql (sql): Driver rlm_sql_mysql (module rlm_sql_mysql) loaded and linked
-2h2rd Tue May  7 13:58:59 2024 : Info: rlm_sql_mysql: libmysql version: 8.0.36
-2h2rd Tue May  7 13:58:59 2024 : Info: rlm_sql (sql): Attempting to connect to database "radius"
-2h2rd WARNING: MYSQL_OPT_RECONNECT is deprecated and will be removed in a future version.
-2h2rd WARNING: MYSQL_OPT_RECONNECT is deprecated and will be removed in a future version.
-2h2rd WARNING: MYSQL_OPT_RECONNECT is deprecated and will be removed in a future version.
-2h2rd WARNING: MYSQL_OPT_RECONNECT is deprecated and will be removed in a future version.
-2h2rd WARNING: MYSQL_OPT_RECONNECT is deprecated and will be removed in a future version.
-2h2rd WARNING: MYSQL_OPT_RECONNECT is deprecated and will be removed in a future version.
-2h2rd Tue May  7 13:58:59 2024 : Info: Loaded virtual server <default>
-2h2rd Tue May  7 13:58:59 2024 : Warning: Ignoring "ldap" (see raddb/mods-available/README.rst)
-2h2rd Tue May  7 13:58:59 2024 : Info: Loaded virtual server default
-2h2rd Tue May  7 13:58:59 2024 : Info:  # Skipping contents of 'if' as it is always 'false' -- /etc/freeradius/sites-enabled/inner-tunnel:366
-2h2rd Tue May  7 13:58:59 2024 : Info: Loaded virtual server inner-tunnel
-2h2rd Tue May  7 13:58:59 2024 : Error: /etc/freeradius/sites-enabled/coa-relay[115]: 'update' sections cannot be empty
-2h2rd Tue May  7 13:58:59 2024 : Error: /etc/freeradius/sites-enabled/coa-relay[95]: Errors parsing recv-coa section.
-2h2rd Tue May  7 13:58:59 2024 : Error: Failed to load virtual server coa
-```
-
 ### Radclient examples
 
 
@@ -227,7 +197,7 @@ echo 'User-Name = "pppoe@example.com",Cisco-Service-Info = "QD;1048576000;196608
     radclient -x -s '127.0.0.1' coa testing123
 ```
 
-## PPP_VAN_JACOBSON_TCP_IP = false
+## PPP_VAN_JACOBSON_TCP_IP = 'false'
 
 See [ASR 1002-X PPPoE problem with Virtual-Access sub-interfaces](https://community.cisco.com/t5/other-service-provider-subjects/asr-1002-x-pppoe-problem-with-virtual-access-sub-interfaces/td-p/2665369).
 
