@@ -122,6 +122,7 @@ echo "home_server_pool coa-nas$i {
         # Enable coa-relay in freeadius
         ln -s $RADIUS_PATH/sites-available/coa-relay $RADIUS_PATH/sites-enabled/coa-relay
 
+        mkdir var/log/freeradius/raddact
         touch var/log/freeradius/raddact/detail_coa
 
         echo 'detail detail_coa {
