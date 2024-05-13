@@ -48,6 +48,7 @@ function init_freeradius {
 
         # Get IP of the radius container
         IP_STATUS=`ifconfig $STATUS_INTERFACE | awk '/inet /{ print $2;}' | grep -v 'inet6'`
+        echo "Setting the status page for IP $IP_STATUS"
 
         sed -i '0,/ipaddr = 127.0.0.1/s/ipaddr = 127.0.0.1/ipaddr = '$IP_STATUS'/' $RADIUS_PATH/sites-available/status
         sed -i '0,/admin/s/admin/'$STATUS_CLIENT'/' $RADIUS_PATH/sites-available/status
@@ -70,6 +71,7 @@ function init_freeradius {
 
         # Get IP of the radius container
         IP_COA=`ifconfig $COA_RELAY_INTERFACE | awk '/inet /{ print $2;}' | grep -v 'inet6'`
+        echo "Setting the CoA relay for IP $IP_COA"
 
         sed -i '0,/ipaddr = 127.0.0.1/s/ipaddr = 127.0.0.1/ipaddr = '$IP_COA'/' $RADIUS_PATH/sites-available/coa-relay
         awk '/update control {/,/}/{ sub(/^#/, ""); print; next }1' $RADIUS_PATH/sites-available/coa-relay > temp && mv temp $RADIUS_PATH/sites-available/coa-relay
