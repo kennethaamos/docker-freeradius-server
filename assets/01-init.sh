@@ -47,7 +47,7 @@ function init_freeradius {
         ln -s $RADIUS_PATH/sites-available/status $RADIUS_PATH/sites-enabled/status
 
         # Get IP of the radius container
-        IP_STATUS=`ifconfig $STATUS_INTERFACE | awk '/inet/{ print $2;} '`
+        IP_STATUS=`ifconfig $STATUS_INTERFACE | awk '/inet /{ print $2;}' | grep -v 'inet6'`
 
         sed -i '0,/ipaddr = 127.0.0.1/s/ipaddr = 127.0.0.1/ipaddr = '$IP_STATUS'/' $RADIUS_PATH/sites-available/status
         sed -i '0,/admin/s/admin/'$STATUS_CLIENT'/' $RADIUS_PATH/sites-available/status
