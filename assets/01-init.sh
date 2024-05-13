@@ -69,7 +69,7 @@ function init_freeradius {
         fi
 
         # Get IP of the radius container
-        IP_COA=`ifconfig $COA_RELAY_INTERFACE | awk '/inet/{ print $2;} '`
+        IP_COA=`ifconfig $COA_RELAY_INTERFACE | awk '/inet/{ print $2;}' | grep -v 'inet6'`
 
         sed -i '0,/ipaddr = 127.0.0.1/s/ipaddr = 127.0.0.1/ipaddr = '$IP_COA'/' $RADIUS_PATH/sites-available/coa-relay
         awk '/update control {/,/}/{ sub(/^#/, ""); print; next }1' $RADIUS_PATH/sites-available/coa-relay > temp && mv temp $RADIUS_PATH/sites-available/coa-relay
