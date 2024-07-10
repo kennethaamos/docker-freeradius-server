@@ -1,5 +1,5 @@
 # Start from FreeRadius image
-FROM freeradius/freeradius-server:3.2.3
+FROM freeradius/freeradius-server:3.2.5
 
 # Set labels for metadata
 LABEL Description="FreeRadius Docker image based on Ubuntu 20.04 LTS." \
